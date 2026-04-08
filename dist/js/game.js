@@ -472,88 +472,143 @@ var Game = (() => {
     create() {
       this.audioManager = new AudioManager(this);
       this.unlockedLevel = this.getUnlockedLevel();
-      this.drawBackground();
+      this.background = this.add.image(0, 0, "background").setOrigin(0, 0);
       this.createHeader();
       this.createLevelGrid();
       this.createBackButton();
+      this.createScrollbar();
     }
     getUnlockedLevel() {
       const saved = localStorage.getItem(STORAGE_KEYS.LEVEL_PROGRESS);
       return saved ? parseInt(saved) : 1;
     }
-    drawBackground() {
-      this.add.image(0, 0, "background").setOrigin(0, 0);
-    }
     createHeader() {
-      const headerBg = this.add.rectangle(GAME_WIDTH / 2, 0, GAME_WIDTH, 80, 1710638, 0.8);
-      headerBg.setOrigin(0.5, 0);
-      this.add.text(GAME_WIDTH / 2, 40, "SELECT LEVEL", {
-        fontSize: "32px",
-        fontFamily: "Arial Black",
+      this.add.rectangle(GAME_WIDTH / 2, 50, GAME_WIDTH, 80, 1710638, 0.9);
+      const title = this.add.text(GAME_WIDTH / 2, 50, "LEVELS", {
+        fontSize: "36px",
+        fontFamily: "Arial",
         color: "#f1c40f",
         bold: true
       }).setOrigin(0.5);
+      const subtitle = this.add.text(GAME_WIDTH / 2, 85, `Level ${this.unlockedLevel} of 50`, {
+        fontSize: "14px",
+        fontFamily: "Arial",
+        color: "#7f8c8d"
+      }).setOrigin(0.5);
     }
     createLevelGrid() {
-      const cols = 5;
-      const cellWidth = 80;
-      const cellHeight = 90;
-      const startX = (GAME_WIDTH - cols * cellWidth) / 2 + cellWidth / 2;
-      const startY = 120;
-      const spacing = 10;
-      LEVELS.forEach((level, index) => {
-        const col = index % cols;
-        const row = Math.floor(index / cols);
-        const x = startX + col * cellWidth;
-        const y = startY + row * cellHeight;
-        const isUnlocked = index + 1 <= this.unlockedLevel;
-        this.createLevelButton(x, y, level, isUnlocked);
-      });
+      this.levelContainer = this.add.container(0, 100);
+      this.page = 0;
+      this.levelsPerPage = 20;
+      const cols = 4;
+      const cellW = 100;
+      const cellH = 100;
+      const startX = (GAME_WIDTH - cols * cellW) / 2 + cellW / 2;
+      this.updateLevelButtons(startX, cellW, cellH, cols);
     }
-    createLevelButton(x, y, level, isUnlocked) {
-      const bg = this.add.image(x, y, isUnlocked ? "button_large" : "button_large").setInteractive({ useHandCursor: isUnlocked });
-      bg.setTint(isUnlocked ? 16777215 : 6710886);
-      const levelText = this.add.text(x, y - 8, `${level.id}`, {
-        fontSize: "28px",
-        fontFamily: "Arial Black",
-        color: isUnlocked ? "#2c3e50" : "#95a5a6",
-        bold: true
-      }).setOrigin(0.5);
-      const scoreText = this.add.text(x, y + 14, `${level.scoreTarget}`, {
-        fontSize: "12px",
-        fontFamily: "Arial",
-        color: isUnlocked ? "#7f8c8d" : "#7f8c8d"
-      }).setOrigin(0.5);
-      if (isUnlocked) {
-        bg.on("pointerover", () => {
-          bg.setScale(1.1);
-          levelText.setScale(1.1);
-        });
-        bg.on("pointerout", () => {
-          bg.setScale(1);
-          levelText.setScale(1);
-        });
-        bg.on("pointerdown", () => {
-          this.audioManager.play("click");
-          this.startLevel(level.id);
-        });
-      } else {
-        const lock = this.add.image(x, y, "lock").setScale(0.6);
-        levelText.setVisible(false);
-        scoreText.setVisible(false);
+    updateLevelButtons(startX, cellW, cellH, cols) {
+      this.levelContainer.removeAll(true);
+      const startLevel = this.page * this.levelsPerPage;
+      const endLevel = Math.min(startLevel + this.levelsPerPage, LEVELS.length);
+      for (let i = startLevel; i < endLevel; i++) {
+        const col = (i - startLevel) % cols;
+        const row = Math.floor((i - startLevel) / cols);
+        const x = startX + col * cellW;
+        const y = 40 + row * cellH;
+        const level = LEVELS[i];
+        const isUnlocked = i + 1 <= this.unlockedLevel;
+        this.createLevelCard(x, y, level.id, level.scoreTarget, isUnlocked);
       }
     }
-    startLevel(levelId) {
-      this.scene.start("GameScene", { level: levelId });
+    createLevelCard(x, y, levelNum, score, isUnlocked) {
+      const card = this.add.container(x, y);
+      const bg = this.add.rectangle(0, 0, 85, 85, isUnlocked ? 2899536 : 3426654);
+      if (!isUnlocked) bg.setAlpha(0.5);
+      card.add(bg);
+      if (isUnlocked) {
+        const num = this.add.text(0, -15, `${levelNum}`, {
+          fontSize: "28px",
+          fontFamily: "Arial",
+          color: "#f1c40f",
+          bold: true
+        }).setOrigin(0.5);
+        card.add(num);
+        const txt = this.add.text(0, 15, `${score}`, {
+          fontSize: "12px",
+          fontFamily: "Arial",
+          color: "#95a5a6"
+        }).setOrigin(0.5);
+        card.add(txt);
+        card.setSize(85, 85);
+        card.setInteractive({ useHandCursor: true });
+        card.on("pointerover", () => {
+          this.tweens.add({ targets: card, scaleX: 1.1, scaleY: 1.1, duration: 100 });
+        });
+        card.on("pointerout", () => {
+          this.tweens.add({ targets: card, scaleX: 1, scaleY: 1, duration: 100 });
+        });
+        card.on("pointerdown", () => {
+          this.audioManager.play("click");
+          this.scene.start("GameScene", { level: levelNum });
+        });
+      } else {
+        const lock = this.add.text(0, 0, "\u{1F512}", {
+          fontSize: "24px"
+        }).setOrigin(0.5);
+        card.add(lock);
+        const num = this.add.text(0, -15, `${levelNum}`, {
+          fontSize: "20px",
+          fontFamily: "Arial",
+          color: "#7f8c8d"
+        }).setOrigin(0.5);
+        card.add(num);
+      }
+    }
+    createScrollbar() {
+      this.add.rectangle(GAME_WIDTH - 20, GAME_HEIGHT / 2 + 50, 15, 300, 1710638, 0.8);
+      const totalPages = Math.ceil(LEVELS.length / this.levelsPerPage);
+      const btnY = 150 + this.page / (totalPages - 1) * 250;
+      this.scrollThumb = this.add.rectangle(GAME_WIDTH - 20, btnY, 15, 30, 15844367);
+      this.add.text(GAME_WIDTH - 40, 130, "\u25C0", {
+        fontSize: "20px",
+        color: "#7f8c8d"
+      }).setInteractive({ useHandCursor: true }).on("pointerdown", () => this.prevPage());
+      this.add.text(GAME_WIDTH - 40, GAME_HEIGHT - 80, "\u25B6", {
+        fontSize: "20px",
+        color: "#7f8c8d"
+      }).setInteractive({ useHandCursor: true }).on("pointerdown", () => this.nextPage());
+    }
+    prevPage() {
+      if (this.page > 0) {
+        this.page--;
+        this.updateLevelButtons(100, 100, 100, 4);
+        this.updateScrollbar();
+      }
+    }
+    nextPage() {
+      const totalPages = Math.ceil(LEVELS.length / this.levelsPerPage);
+      if (this.page < totalPages - 1) {
+        this.page++;
+        this.updateLevelButtons(100, 100, 100, 4);
+        this.updateScrollbar();
+      }
+    }
+    updateScrollbar() {
+      const totalPages = Math.ceil(LEVELS.length / this.levelsPerPage);
+      const btnY = 150 + this.page / Math.max(1, totalPages - 1) * 250;
+      this.tweens.add({ targets: this.scrollThumb, y: btnY, duration: 200 });
     }
     createBackButton() {
-      const btn = this.add.image(60, GAME_HEIGHT - 40, "btn_small").setInteractive({ useHandCursor: true });
-      const text = this.add.text(60, GAME_HEIGHT - 40, "BACK", {
+      const btn = this.add.container(60, GAME_HEIGHT - 40);
+      const bg = this.add.rectangle(0, 0, 100, 40, 2719929);
+      const text = this.add.text(0, 0, "\u2190 BACK", {
         fontSize: "16px",
         fontFamily: "Arial",
-        color: "#ffffff",
-        bold: true
+        color: "#ffffff"
       }).setOrigin(0.5);
+      btn.add([bg, text]);
+      btn.setSize(100, 40);
+      btn.setInteractive({ useHandCursor: true });
       btn.on("pointerover", () => btn.setScale(1.05));
       btn.on("pointerout", () => btn.setScale(1));
       btn.on("pointerdown", () => {
@@ -584,7 +639,6 @@ var Game = (() => {
       this.candyTypes = CANDY_TYPES.slice(0, this.levelData.candyTypes);
       this.setupBackground();
       this.createGrid();
-      this.createUI();
       this.startGame();
     }
     setupBackground() {
