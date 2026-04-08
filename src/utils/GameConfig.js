@@ -2,7 +2,6 @@ import { BootScene } from '../scenes/BootScene.js';
 import { MainMenu } from '../scenes/MainMenu.js';
 import { LevelSelect } from '../scenes/LevelSelect.js';
 import { GameScene } from '../scenes/GameScene.js';
-import { UIScene } from '../scenes/UIScene.js';
 import { PauseScene } from '../scenes/PauseScene.js';
 import { GameOverScene } from '../scenes/GameOverScene.js';
 import { LevelCompleteScene } from '../scenes/LevelCompleteScene.js';
@@ -63,7 +62,7 @@ export function getGameConfig() {
             min: { width: 320, height: 480 },
             max: { width: 768, height: 1024 }
         },
-        scene: [BootScene, MainMenu, LevelSelect, GameScene, UIScene, PauseScene, GameOverScene, LevelCompleteScene],
+        scene: [BootScene, MainMenu, LevelSelect, GameScene, PauseScene, GameOverScene, LevelCompleteScene],
         physics: {
             default: 'arcade',
             arcade: { debug: false }
