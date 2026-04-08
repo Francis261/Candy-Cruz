@@ -50,6 +50,9 @@ export const STORAGE_KEYS = {
 };
 
 export function getGameConfig() {
+    const isMobile = window.innerWidth < 768;
+    const scaleFactor = isMobile ? Math.min(window.innerWidth / GAME_WIDTH, window.innerHeight / GAME_HEIGHT) : 1;
+    
     return {
         type: Phaser.AUTO,
         width: GAME_WIDTH,
@@ -57,10 +60,10 @@ export function getGameConfig() {
         parent: 'game-container',
         backgroundColor: '#1a1a2e',
         scale: {
-            mode: Phaser.Scale.FIT,
+            mode: Phaser.Scale.ENVELOP,
             autoCenter: Phaser.Scale.CENTER_BOTH,
-            min: { width: 320, height: 480 },
-            max: { width: 768, height: 1024 }
+            width: '100%',
+            height: '100%'
         },
         scene: [BootScene, MainMenu, LevelSelect, GameScene, PauseScene, GameOverScene, LevelCompleteScene],
         physics: {

@@ -292,175 +292,88 @@ var Game = (() => {
       super({ key: "MainMenu" });
     }
     create() {
+      this.scaleFactor = Math.min(this.scale.width / GAME_WIDTH, this.scale.height / GAME_HEIGHT);
       this.audioManager = new AudioManager(this);
       this.drawBackground();
       this.createTitle();
       this.createButtons();
-      this.createParticles();
     }
     drawBackground() {
-      this.add.image(0, 0, "background").setOrigin(0, 0);
-      for (let i = 0; i < 7; i++) {
-        const x = Math.random() * GAME_WIDTH;
-        const y = Math.random() * GAME_HEIGHT;
-        const candy = this.add.image(x, y, `candy_${["red", "orange", "yellow", "green", "blue", "purple", "pink"][i]}`);
-        candy.setAlpha(0.2);
-        candy.setScale(0.8);
-      }
+      this.add.image(0, 0, "background").setOrigin(0, 0).setScale(this.scaleFactor);
     }
     createTitle() {
-      const titleShadow = this.add.text(GAME_WIDTH / 2 + 4, 120 + 4, "Candy Cruz", {
-        fontSize: "56px",
-        fontFamily: "Arial Black, Arial",
-        color: "#1a1a2e",
-        bold: true
-      }).setOrigin(0.5);
-      const title = this.add.text(GAME_WIDTH / 2, 120, "Candy Cruz", {
-        fontSize: "56px",
-        fontFamily: "Arial Black, Arial",
+      this.add.text(GAME_WIDTH / 2, 120 * this.scaleFactor, "Candy Cruz", {
+        fontSize: `${56 * this.scaleFactor}px`,
+        fontFamily: "Arial Black",
         color: "#f1c40f",
         bold: true,
         stroke: "#e67e22",
         strokeThickness: 6
       }).setOrigin(0.5);
-      this.add.text(GAME_WIDTH / 2, 180, "Match 3 Puzzle", {
-        fontSize: "24px",
+      this.add.text(GAME_WIDTH / 2, 180 * this.scaleFactor, "Match 3 Puzzle", {
+        fontSize: `${24 * this.scaleFactor}px`,
         fontFamily: "Arial",
         color: "#3498db"
       }).setOrigin(0.5);
     }
     createButtons() {
       const centerX = GAME_WIDTH / 2;
-      const startY = 280;
-      const spacing = 70;
+      const startY = 280 * this.scaleFactor;
+      const spacing = 70 * this.scaleFactor;
       this.createButton(centerX, startY, "PLAY", "btn_play", () => {
         this.audioManager.play("click");
         this.scene.start("LevelSelect");
       });
-      this.createButton(centerX, startY + spacing, "OPTIONS", "btn_small", () => {
-        this.audioManager.play("click");
-        this.showOptions();
-      });
-      this.createButton(centerX, startY + spacing * 2, "HOW TO PLAY", "btn_small", () => {
+      this.createButton(centerX, startY + spacing, "HOW TO PLAY", "btn_small", () => {
         this.audioManager.play("click");
         this.showHelp();
       });
     }
     createButton(x, y, text, texture, callback) {
-      const btn = this.add.image(x, y, texture).setInteractive({ useHandCursor: true });
+      const btn = this.add.image(x, y, texture).setScale(this.scaleFactor).setInteractive({ useHandCursor: true });
       const label = this.add.text(x, y, text, {
-        fontSize: "20px",
+        fontSize: `${20 * this.scaleFactor}px`,
         fontFamily: "Arial",
         color: "#ffffff",
         bold: true
       }).setOrigin(0.5);
-      btn.on("pointerover", () => {
-        btn.setScale(1.05);
-        label.setScale(1.05);
-      });
-      btn.on("pointerout", () => {
-        btn.setScale(1);
-        label.setScale(1);
-      });
+      btn.on("pointerover", () => btn.setScale(1.05 * this.scaleFactor));
+      btn.on("pointerout", () => btn.setScale(this.scaleFactor));
       btn.on("pointerdown", callback);
-      return { btn, label };
-    }
-    showOptions() {
-      const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0, 0.7);
-      const panel = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, "panel");
-      const title = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 150, "Options", {
-        fontSize: "28px",
-        fontFamily: "Arial Black",
-        color: "#f1c40f"
-      }).setOrigin(0.5);
-      const soundText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 80, "Sound: ON", {
-        fontSize: "22px",
-        fontFamily: "Arial",
-        color: "#ffffff"
-      }).setOrigin(0.5);
-      const soundBtn = this.add.image(GAME_WIDTH / 2 + 100, GAME_HEIGHT / 2 - 80, "btn_small").setInteractive({ useHandCursor: true });
-      this.add.text(GAME_WIDTH / 2 + 100, GAME_HEIGHT / 2 - 80, "TOGGLE", {
-        fontSize: "14px",
-        fontFamily: "Arial",
-        color: "#ffffff"
-      }).setOrigin(0.5);
-      soundBtn.on("pointerdown", () => {
-        const enabled = this.audioManager.toggle();
-        soundText.setText(`Sound: ${enabled ? "ON" : "OFF"}`);
-        this.audioManager.play("click");
-      });
-      const closeBtn = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 120, "btn_small").setInteractive({ useHandCursor: true });
-      this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 120, "CLOSE", {
-        fontSize: "16px",
-        fontFamily: "Arial",
-        color: "#ffffff"
-      }).setOrigin(0.5);
-      closeBtn.on("pointerdown", () => {
-        overlay.destroy();
-        panel.destroy();
-        title.destroy();
-        soundText.destroy();
-        soundBtn.destroy();
-        closeBtn.destroy();
-      });
     }
     showHelp() {
-      const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0, 0.7);
-      const panel = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, "panel");
-      const title = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 150, "How to Play", {
-        fontSize: "28px",
-        fontFamily: "Arial Black",
-        color: "#f1c40f"
-      }).setOrigin(0.5);
+      const overlay = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0, 0.8);
       const helpText = [
         "Match 3 or more candies",
-        "of the same color in a row",
-        "or column to score points!",
+        "of the same color",
+        "in a row or column!",
         "",
         "Special Candies:",
         "- Horizontal: Clears row",
         "- Vertical: Clears column",
-        "- Color Bomb: Clears all",
-        "  of one color",
+        "- Color Bomb: Clears color",
         "",
-        "Complete objectives within",
-        "moves limit to win!"
+        "Complete objectives",
+        "within moves to win!"
       ];
+      const startY = GAME_HEIGHT / 2 - 80 * this.scaleFactor;
       helpText.forEach((line, i) => {
-        this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 80 + i * 22, line, {
-          fontSize: "14px",
+        this.add.text(GAME_WIDTH / 2, startY + i * 22 * this.scaleFactor, line, {
+          fontSize: `${14 * this.scaleFactor}px`,
           fontFamily: "Arial",
           color: "#ecf0f1"
         }).setOrigin(0.5);
       });
-      const closeBtn = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 130, "btn_small").setInteractive({ useHandCursor: true });
-      this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 130, "CLOSE", {
-        fontSize: "16px",
+      const closeBtn = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 130 * this.scaleFactor, "btn_small").setScale(this.scaleFactor).setInteractive({ useHandCursor: true });
+      this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 130 * this.scaleFactor, "CLOSE", {
+        fontSize: `${16 * this.scaleFactor}px`,
         fontFamily: "Arial",
         color: "#ffffff"
       }).setOrigin(0.5);
       closeBtn.on("pointerdown", () => {
         overlay.destroy();
-        panel.destroy();
-        title.destroy();
         closeBtn.destroy();
       });
-    }
-    createParticles() {
-      for (let i = 0; i < 15; i++) {
-        const x = Math.random() * GAME_WIDTH;
-        const y = GAME_HEIGHT + Math.random() * 100;
-        const candy = this.add.image(x, y, `candy_${["red", "orange", "yellow", "green", "blue", "purple", "pink"][Math.floor(Math.random() * 7)]}`);
-        candy.setAlpha(0.6);
-        candy.setScale(0.5 + Math.random() * 0.5);
-        this.tweens.add({
-          targets: candy,
-          y: -50,
-          duration: 3e3 + Math.random() * 4e3,
-          repeat: -1,
-          yoyo: true
-        });
-      }
     }
   };
 
@@ -470,39 +383,39 @@ var Game = (() => {
       super({ key: "LevelSelect" });
     }
     create() {
+      this.scaleFactor = Math.min(this.scale.width / GAME_WIDTH, this.scale.height / GAME_HEIGHT);
       this.audioManager = new AudioManager(this);
       this.unlockedLevel = this.getUnlockedLevel();
-      this.background = this.add.image(0, 0, "background").setOrigin(0, 0);
+      this.background = this.add.image(0, 0, "background").setOrigin(0, 0).setScale(this.scaleFactor);
       this.createHeader();
       this.createLevelGrid();
       this.createBackButton();
-      this.createScrollbar();
     }
     getUnlockedLevel() {
       const saved = localStorage.getItem(STORAGE_KEYS.LEVEL_PROGRESS);
       return saved ? parseInt(saved) : 1;
     }
     createHeader() {
-      this.add.rectangle(GAME_WIDTH / 2, 50, GAME_WIDTH, 80, 1710638, 0.9);
-      const title = this.add.text(GAME_WIDTH / 2, 50, "LEVELS", {
-        fontSize: "36px",
+      this.add.rectangle(GAME_WIDTH / 2, 50 * this.scaleFactor, GAME_WIDTH * this.scaleFactor, 80 * this.scaleFactor, 1710638, 0.9);
+      this.add.text(GAME_WIDTH / 2, 50 * this.scaleFactor, "LEVELS", {
+        fontSize: `${36 * this.scaleFactor}px`,
         fontFamily: "Arial",
         color: "#f1c40f",
         bold: true
       }).setOrigin(0.5);
-      const subtitle = this.add.text(GAME_WIDTH / 2, 85, `Level ${this.unlockedLevel} of 50`, {
-        fontSize: "14px",
+      this.add.text(GAME_WIDTH / 2, 85 * this.scaleFactor, `Level ${this.unlockedLevel} of 50`, {
+        fontSize: `${14 * this.scaleFactor}px`,
         fontFamily: "Arial",
         color: "#7f8c8d"
       }).setOrigin(0.5);
     }
     createLevelGrid() {
-      this.levelContainer = this.add.container(0, 100);
+      this.levelContainer = this.add.container(0, 100 * this.scaleFactor);
       this.page = 0;
       this.levelsPerPage = 20;
       const cols = 4;
-      const cellW = 100;
-      const cellH = 100;
+      const cellW = 100 * this.scaleFactor;
+      const cellH = 100 * this.scaleFactor;
       const startX = (GAME_WIDTH - cols * cellW) / 2 + cellW / 2;
       this.updateLevelButtons(startX, cellW, cellH, cols);
     }
@@ -514,32 +427,33 @@ var Game = (() => {
         const col = (i - startLevel) % cols;
         const row = Math.floor((i - startLevel) / cols);
         const x = startX + col * cellW;
-        const y = 40 + row * cellH;
+        const y = 40 * this.scaleFactor + row * cellH;
         const level = LEVELS[i];
         const isUnlocked = i + 1 <= this.unlockedLevel;
-        this.createLevelCard(x, y, level.id, level.scoreTarget, isUnlocked);
+        this.createLevelCard(x, y, level.id, level.scoreTarget, isUnlocked, cellW);
       }
     }
-    createLevelCard(x, y, levelNum, score, isUnlocked) {
+    createLevelCard(x, y, levelNum, score, isUnlocked, cellW) {
       const card = this.add.container(x, y);
-      const bg = this.add.rectangle(0, 0, 85, 85, isUnlocked ? 2899536 : 3426654);
+      const size = cellW * 0.85;
+      const bg = this.add.rectangle(0, 0, size, size, isUnlocked ? 2899536 : 3426654);
       if (!isUnlocked) bg.setAlpha(0.5);
       card.add(bg);
       if (isUnlocked) {
-        const num = this.add.text(0, -15, `${levelNum}`, {
-          fontSize: "28px",
+        const num = this.add.text(0, -size * 0.15, `${levelNum}`, {
+          fontSize: `${28 * this.scaleFactor}px`,
           fontFamily: "Arial",
           color: "#f1c40f",
           bold: true
         }).setOrigin(0.5);
         card.add(num);
-        const txt = this.add.text(0, 15, `${score}`, {
-          fontSize: "12px",
+        const txt = this.add.text(0, size * 0.15, `${score}`, {
+          fontSize: `${12 * this.scaleFactor}px`,
           fontFamily: "Arial",
           color: "#95a5a6"
         }).setOrigin(0.5);
         card.add(txt);
-        card.setSize(85, 85);
+        card.setSize(size, size);
         card.setInteractive({ useHandCursor: true });
         card.on("pointerover", () => {
           this.tweens.add({ targets: card, scaleX: 1.1, scaleY: 1.1, duration: 100 });
@@ -553,61 +467,21 @@ var Game = (() => {
         });
       } else {
         const lock = this.add.text(0, 0, "\u{1F512}", {
-          fontSize: "24px"
+          fontSize: `${24 * this.scaleFactor}px`
         }).setOrigin(0.5);
         card.add(lock);
-        const num = this.add.text(0, -15, `${levelNum}`, {
-          fontSize: "20px",
-          fontFamily: "Arial",
-          color: "#7f8c8d"
-        }).setOrigin(0.5);
-        card.add(num);
       }
-    }
-    createScrollbar() {
-      this.add.rectangle(GAME_WIDTH - 20, GAME_HEIGHT / 2 + 50, 15, 300, 1710638, 0.8);
-      const totalPages = Math.ceil(LEVELS.length / this.levelsPerPage);
-      const btnY = 150 + this.page / (totalPages - 1) * 250;
-      this.scrollThumb = this.add.rectangle(GAME_WIDTH - 20, btnY, 15, 30, 15844367);
-      this.add.text(GAME_WIDTH - 40, 130, "\u25C0", {
-        fontSize: "20px",
-        color: "#7f8c8d"
-      }).setInteractive({ useHandCursor: true }).on("pointerdown", () => this.prevPage());
-      this.add.text(GAME_WIDTH - 40, GAME_HEIGHT - 80, "\u25B6", {
-        fontSize: "20px",
-        color: "#7f8c8d"
-      }).setInteractive({ useHandCursor: true }).on("pointerdown", () => this.nextPage());
-    }
-    prevPage() {
-      if (this.page > 0) {
-        this.page--;
-        this.updateLevelButtons(100, 100, 100, 4);
-        this.updateScrollbar();
-      }
-    }
-    nextPage() {
-      const totalPages = Math.ceil(LEVELS.length / this.levelsPerPage);
-      if (this.page < totalPages - 1) {
-        this.page++;
-        this.updateLevelButtons(100, 100, 100, 4);
-        this.updateScrollbar();
-      }
-    }
-    updateScrollbar() {
-      const totalPages = Math.ceil(LEVELS.length / this.levelsPerPage);
-      const btnY = 150 + this.page / Math.max(1, totalPages - 1) * 250;
-      this.tweens.add({ targets: this.scrollThumb, y: btnY, duration: 200 });
     }
     createBackButton() {
-      const btn = this.add.container(60, GAME_HEIGHT - 40);
-      const bg = this.add.rectangle(0, 0, 100, 40, 2719929);
+      const btn = this.add.container(60 * this.scaleFactor, GAME_HEIGHT - 40 * this.scaleFactor);
+      const bg = this.add.rectangle(0, 0, 100 * this.scaleFactor, 40 * this.scaleFactor, 2719929);
       const text = this.add.text(0, 0, "\u2190 BACK", {
-        fontSize: "16px",
+        fontSize: `${16 * this.scaleFactor}px`,
         fontFamily: "Arial",
         color: "#ffffff"
       }).setOrigin(0.5);
       btn.add([bg, text]);
-      btn.setSize(100, 40);
+      btn.setSize(100 * this.scaleFactor, 40 * this.scaleFactor);
       btn.setInteractive({ useHandCursor: true });
       btn.on("pointerover", () => btn.setScale(1.05));
       btn.on("pointerout", () => btn.setScale(1));
@@ -622,6 +496,7 @@ var Game = (() => {
   var GameScene = class extends Phaser.Scene {
     constructor() {
       super({ key: "GameScene" });
+      this.tileSize = TILE_SIZE;
     }
     init(data) {
       this.levelId = data.level || 1;
@@ -633,6 +508,23 @@ var Game = (() => {
       this.movesLeft = this.levelData.moves;
       this.chainCount = 0;
       this.isGameOver = false;
+      this.scaleGame();
+    }
+    scaleGame() {
+      const w = this.scale.width;
+      const h = this.scale.height;
+      const scaleX = w / GAME_WIDTH;
+      const scaleY = h / GAME_HEIGHT;
+      this.scaleFactor = Math.min(scaleX, scaleY);
+      if (this.scaleFactor < 1) {
+        this.tileSize = Math.floor(TILE_SIZE * this.scaleFactor);
+        this.gridOffsetX = Math.floor(GRID_OFFSET_X * this.scaleFactor);
+        this.gridOffsetY = Math.floor(100 * this.scaleFactor);
+      } else {
+        this.tileSize = TILE_SIZE;
+        this.gridOffsetX = GRID_OFFSET_X;
+        this.gridOffsetY = 100;
+      }
     }
     create() {
       this.audioManager = new AudioManager(this);
@@ -643,32 +535,34 @@ var Game = (() => {
       this.startGame();
     }
     createUI() {
-      this.add.rectangle(GAME_WIDTH / 2, 35, GAME_WIDTH, 70, 1710638, 0.95);
-      this.add.text(20, 15, "LV", { fontSize: "12px", color: "#7f8c8d" });
-      this.levelText = this.add.text(20, 32, "1", { fontSize: "24px", color: "#f1c40f", bold: true });
-      this.add.text(GAME_WIDTH / 2, 15, "SCORE", { fontSize: "12px", color: "#7f8c8d" }).setOrigin(0.5);
-      this.scoreText = this.add.text(GAME_WIDTH / 2, 35, "0", { fontSize: "20px", color: "#fff", bold: true }).setOrigin(0.5);
-      this.add.text(GAME_WIDTH - 20, 15, "MOVES", { fontSize: "12px", color: "#7f8c8d" }).setOrigin(1, 0);
-      this.movesText = this.add.text(GAME_WIDTH - 20, 32, "30", { fontSize: "24px", color: "#3498db", bold: true }).setOrigin(1, 0);
-      this.add.image(GAME_WIDTH - 30, GAME_HEIGHT - 30, "btn_pause").setInteractive().on("pointerdown", () => this.pauseGame());
+      const barY = 35 * this.scaleFactor;
+      const barH = 70 * this.scaleFactor;
+      this.add.rectangle(GAME_WIDTH / 2, barY, GAME_WIDTH * this.scaleFactor, barH, 1710638, 0.95);
+      this.add.text(20 * this.scaleFactor, 15 * this.scaleFactor, "LV", { fontSize: `${12 * this.scaleFactor}px`, color: "#7f8c8d" });
+      this.levelText = this.add.text(20 * this.scaleFactor, 32 * this.scaleFactor, "1", { fontSize: `${24 * this.scaleFactor}px`, color: "#f1c40f", bold: true });
+      this.add.text(GAME_WIDTH / 2, 15 * this.scaleFactor, "SCORE", { fontSize: `${12 * this.scaleFactor}px`, color: "#7f8c8d" }).setOrigin(0.5);
+      this.scoreText = this.add.text(GAME_WIDTH / 2, 35 * this.scaleFactor, "0", { fontSize: `${20 * this.scaleFactor}px`, color: "#fff", bold: true }).setOrigin(0.5);
+      this.add.text(GAME_WIDTH - 20 * this.scaleFactor, 15 * this.scaleFactor, "MOVES", { fontSize: `${12 * this.scaleFactor}px`, color: "#7f8c8d" }).setOrigin(1, 0);
+      this.movesText = this.add.text(GAME_WIDTH - 20 * this.scaleFactor, 32 * this.scaleFactor, "30", { fontSize: `${24 * this.scaleFactor}px`, color: "#3498db", bold: true }).setOrigin(1, 0);
+      this.add.image(GAME_WIDTH - 30 * this.scaleFactor, GAME_HEIGHT - 30 * this.scaleFactor, "btn_pause").setScale(this.scaleFactor).setInteractive().on("pointerdown", () => this.pauseGame());
     }
     setupBackground() {
-      this.add.image(0, 0, "background").setOrigin(0, 0);
+      this.add.image(0, 0, "background").setOrigin(0, 0).setScale(this.scaleFactor);
       this.add.rectangle(
         GAME_WIDTH / 2,
-        GRID_OFFSET_Y + GRID_ROWS * TILE_SIZE / 2,
-        GRID_COLS * TILE_SIZE + 16,
-        GRID_ROWS * TILE_SIZE + 16,
+        this.gridOffsetY + GRID_ROWS * this.tileSize / 2,
+        GRID_COLS * this.tileSize + 16,
+        GRID_ROWS * this.tileSize + 16,
         1710638,
         0.7
       );
       for (let row = 0; row < GRID_ROWS; row++) {
         for (let col = 0; col < GRID_COLS; col++) {
           this.add.image(
-            GRID_OFFSET_X + col * TILE_SIZE + 32,
-            GRID_OFFSET_Y + row * TILE_SIZE + 32,
+            this.gridOffsetX + col * this.tileSize + this.tileSize / 2,
+            this.gridOffsetY + row * this.tileSize + this.tileSize / 2,
             "tile_bg"
-          ).setAlpha(0.3);
+          ).setAlpha(0.3).setScale(this.scaleFactor);
         }
       }
     }
@@ -682,15 +576,15 @@ var Game = (() => {
       }
     }
     createCandy(row, col, specialType = SPECIAL_TYPES.NONE) {
-      const x = GRID_OFFSET_X + col * TILE_SIZE + 32;
-      const y = GRID_OFFSET_Y + row * TILE_SIZE + 32;
+      const x = this.gridOffsetX + col * this.tileSize + this.tileSize / 2;
+      const y = this.gridOffsetY + row * this.tileSize + this.tileSize / 2;
       const type = this.candyTypes[Math.floor(Math.random() * this.candyTypes.length)];
       let texture = `candy_${type}`;
       if (specialType === SPECIAL_TYPES.HORIZONTAL) texture = "candy_horizontal";
       if (specialType === SPECIAL_TYPES.VERTICAL) texture = "candy_vertical";
       if (specialType === SPECIAL_TYPES.COLOR_BOMB) texture = "candy_colorbomb";
-      const candy = this.add.image(x, y, texture);
-      candy.setInteractive();
+      const candy = this.add.image(x, y, texture).setScale(this.scaleFactor);
+      candy.setInteractive({ useHandCursor: true });
       candy.setData("row", row);
       candy.setData("col", col);
       candy.setData("type", type);
@@ -702,7 +596,7 @@ var Game = (() => {
       if (this.isProcessing || this.isGameOver) return;
       if (this.selectedTile === null) {
         this.selectedTile = candy;
-        this.tweens.add({ targets: candy, scaleX: 1.2, scaleY: 1.2, duration: 100, yoyo: true, repeat: 2 });
+        this.tweens.add({ targets: candy, scaleX: 1.2 * this.scaleFactor, scaleY: 1.2 * this.scaleFactor, duration: 100, yoyo: true, repeat: 2 });
       } else {
         const row = candy.getData("row");
         const col = candy.getData("col");
@@ -712,9 +606,9 @@ var Game = (() => {
         if (isAdjacent) {
           this.swapCandies(this.selectedTile, candy);
         } else {
-          this.selectedTile.setScale(1);
+          this.selectedTile.setScale(this.scaleFactor);
           this.selectedTile = candy;
-          this.tweens.add({ targets: candy, scaleX: 1.2, scaleY: 1.2, duration: 100, yoyo: true, repeat: 2 });
+          this.tweens.add({ targets: candy, scaleX: 1.2 * this.scaleFactor, scaleY: 1.2 * this.scaleFactor, duration: 100, yoyo: true, repeat: 2 });
         }
       }
     }
@@ -724,10 +618,10 @@ var Game = (() => {
       const col1 = candy1.getData("col");
       const row2 = candy2.getData("row");
       const col2 = candy2.getData("col");
-      const x1 = GRID_OFFSET_X + col1 * TILE_SIZE + 32;
-      const y1 = GRID_OFFSET_Y + row1 * TILE_SIZE + 32;
-      const x2 = GRID_OFFSET_X + col2 * TILE_SIZE + 32;
-      const y2 = GRID_OFFSET_Y + row2 * TILE_SIZE + 32;
+      const x1 = this.gridOffsetX + col1 * this.tileSize + this.tileSize / 2;
+      const y1 = this.gridOffsetY + row1 * this.tileSize + this.tileSize / 2;
+      const x2 = this.gridOffsetX + col2 * this.tileSize + this.tileSize / 2;
+      const y2 = this.gridOffsetY + row2 * this.tileSize + this.tileSize / 2;
       this.tweens.add({
         targets: [candy1, candy2],
         x: [x2, x1],
@@ -838,7 +732,7 @@ var Game = (() => {
             this.grid[newRow][col] = candy;
             this.grid[row][col] = null;
             candy.setData("row", newRow);
-            this.tweens.add({ targets: candy, y: GRID_OFFSET_Y + newRow * TILE_SIZE + 32, duration: 150 });
+            this.tweens.add({ targets: candy, y: this.gridOffsetY + newRow * this.tileSize + this.tileSize / 2, duration: 150 });
           }
         }
       }
@@ -854,11 +748,11 @@ var Game = (() => {
         }
         for (let row = 0; row < GRID_ROWS; row++) {
           if (this.grid[row][col] === null) {
-            const y = GRID_OFFSET_Y + row * TILE_SIZE + 32;
-            const x = GRID_OFFSET_X + col * TILE_SIZE + 32;
+            const y = this.gridOffsetY + row * this.tileSize + this.tileSize / 2;
+            const x = this.gridOffsetX + col * this.tileSize + this.tileSize / 2;
             const type = this.candyTypes[Math.floor(Math.random() * this.candyTypes.length)];
-            const candy = this.add.image(x, y - emptyCount * 30, `candy_${type}`);
-            candy.setInteractive();
+            const candy = this.add.image(x, y - emptyCount * 30, `candy_${type}`).setScale(this.scaleFactor);
+            candy.setInteractive({ useHandCursor: true });
             candy.setData("row", row);
             candy.setData("col", col);
             candy.setData("type", type);
@@ -1155,7 +1049,6 @@ var Game = (() => {
   var GRID_COLS = 8;
   var TILE_SIZE = 64;
   var GRID_OFFSET_X = (GAME_WIDTH - GRID_COLS * TILE_SIZE) / 2;
-  var GRID_OFFSET_Y = 100;
   var CANDY_TYPES = ["red", "orange", "yellow", "green", "blue", "purple", "pink"];
   var SPECIAL_TYPES = {
     NONE: 0,
@@ -1190,6 +1083,8 @@ var Game = (() => {
     SOUND_ENABLED: "candycruz_sound"
   };
   function getGameConfig() {
+    const isMobile = window.innerWidth < 768;
+    const scaleFactor = isMobile ? Math.min(window.innerWidth / GAME_WIDTH, window.innerHeight / GAME_HEIGHT) : 1;
     return {
       type: Phaser.AUTO,
       width: GAME_WIDTH,
@@ -1197,10 +1092,10 @@ var Game = (() => {
       parent: "game-container",
       backgroundColor: "#1a1a2e",
       scale: {
-        mode: Phaser.Scale.FIT,
+        mode: Phaser.Scale.ENVELOP,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        min: { width: 320, height: 480 },
-        max: { width: 768, height: 1024 }
+        width: "100%",
+        height: "100%"
       },
       scene: [BootScene, MainMenu, LevelSelect, GameScene, PauseScene, GameOverScene, LevelCompleteScene],
       physics: {

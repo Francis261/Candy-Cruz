@@ -7,6 +7,7 @@ import { AudioManager } from '../utils/AudioManager.js';
 export class GameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'GameScene' });
+        this.tileSize = TILE_SIZE;
     }
 
     init(data) {
@@ -19,6 +20,26 @@ export class GameScene extends Phaser.Scene {
         this.movesLeft = this.levelData.moves;
         this.chainCount = 0;
         this.isGameOver = false;
+        
+        this.scaleGame();
+    }
+
+    scaleGame() {
+        const w = this.scale.width;
+        const h = this.scale.height;
+        const scaleX = w / GAME_WIDTH;
+        const scaleY = h / GAME_HEIGHT;
+        this.scaleFactor = Math.min(scaleX, scaleY);
+        
+        if (this.scaleFactor < 1) {
+            this.tileSize = Math.floor(TILE_SIZE * this.scaleFactor);
+            this.gridOffsetX = Math.floor(GRID_OFFSET_X * this.scaleFactor);
+            this.gridOffsetY = Math.floor(100 * this.scaleFactor);
+        } else {
+            this.tileSize = TILE_SIZE;
+            this.gridOffsetX = GRID_OFFSET_X;
+            this.gridOffsetY = 100;
+        }
     }
 
     create() {
@@ -31,36 +52,42 @@ export class GameScene extends Phaser.Scene {
     }
 
     createUI() {
-        this.add.rectangle(GAME_WIDTH / 2, 35, GAME_WIDTH, 70, 0x1a1a2e, 0.95);
+        const barY = 35 * this.scaleFactor;
+        const barH = 70 * this.scaleFactor;
         
-        this.add.text(20, 15, 'LV', { fontSize: '12px', color: '#7f8c8d' });
-        this.levelText = this.add.text(20, 32, '1', { fontSize: '24px', color: '#f1c40f', bold: true });
+        this.add.rectangle(GAME_WIDTH / 2, barY, GAME_WIDTH * this.scaleFactor, barH, 0x1a1a2e, 0.95);
         
-        this.add.text(GAME_WIDTH / 2, 15, 'SCORE', { fontSize: '12px', color: '#7f8c8d' }).setOrigin(0.5);
-        this.scoreText = this.add.text(GAME_WIDTH / 2, 35, '0', { fontSize: '20px', color: '#fff', bold: true }).setOrigin(0.5);
+        this.add.text(20 * this.scaleFactor, 15 * this.scaleFactor, 'LV', { fontSize: `${12 * this.scaleFactor}px`, color: '#7f8c8d' });
+        this.levelText = this.add.text(20 * this.scaleFactor, 32 * this.scaleFactor, '1', { fontSize: `${24 * this.scaleFactor}px`, color: '#f1c40f', bold: true });
         
-        this.add.text(GAME_WIDTH - 20, 15, 'MOVES', { fontSize: '12px', color: '#7f8c8d' }).setOrigin(1, 0);
-        this.movesText = this.add.text(GAME_WIDTH - 20, 32, '30', { fontSize: '24px', color: '#3498db', bold: true }).setOrigin(1, 0);
+        this.add.text(GAME_WIDTH / 2, 15 * this.scaleFactor, 'SCORE', { fontSize: `${12 * this.scaleFactor}px`, color: '#7f8c8d' }).setOrigin(0.5);
+        this.scoreText = this.add.text(GAME_WIDTH / 2, 35 * this.scaleFactor, '0', { fontSize: `${20 * this.scaleFactor}px`, color: '#fff', bold: true }).setOrigin(0.5);
+        
+        this.add.text(GAME_WIDTH - 20 * this.scaleFactor, 15 * this.scaleFactor, 'MOVES', { fontSize: `${12 * this.scaleFactor}px`, color: '#7f8c8d' }).setOrigin(1, 0);
+        this.movesText = this.add.text(GAME_WIDTH - 20 * this.scaleFactor, 32 * this.scaleFactor, '30', { fontSize: `${24 * this.scaleFactor}px`, color: '#3498db', bold: true }).setOrigin(1, 0);
 
-        this.add.image(GAME_WIDTH - 30, GAME_HEIGHT - 30, 'btn_pause').setInteractive().on('pointerdown', () => this.pauseGame());
+        this.add.image(GAME_WIDTH - 30 * this.scaleFactor, GAME_HEIGHT - 30 * this.scaleFactor, 'btn_pause')
+            .setScale(this.scaleFactor)
+            .setInteractive()
+            .on('pointerdown', () => this.pauseGame());
     }
 
     setupBackground() {
-        this.add.image(0, 0, 'background').setOrigin(0, 0);
+        this.add.image(0, 0, 'background').setOrigin(0, 0).setScale(this.scaleFactor);
         
         this.add.rectangle(
-            GAME_WIDTH / 2, GRID_OFFSET_Y + (GRID_ROWS * TILE_SIZE) / 2,
-            GRID_COLS * TILE_SIZE + 16, GRID_ROWS * TILE_SIZE + 16,
+            GAME_WIDTH / 2, this.gridOffsetY + (GRID_ROWS * this.tileSize) / 2,
+            GRID_COLS * this.tileSize + 16, GRID_ROWS * this.tileSize + 16,
             0x1a1a2e, 0.7
         );
         
         for (let row = 0; row < GRID_ROWS; row++) {
             for (let col = 0; col < GRID_COLS; col++) {
                 this.add.image(
-                    GRID_OFFSET_X + col * TILE_SIZE + 32,
-                    GRID_OFFSET_Y + row * TILE_SIZE + 32,
+                    this.gridOffsetX + col * this.tileSize + this.tileSize / 2,
+                    this.gridOffsetY + row * this.tileSize + this.tileSize / 2,
                     'tile_bg'
-                ).setAlpha(0.3);
+                ).setAlpha(0.3).setScale(this.scaleFactor);
             }
         }
     }
@@ -76,8 +103,8 @@ export class GameScene extends Phaser.Scene {
     }
 
     createCandy(row, col, specialType = SPECIAL_TYPES.NONE) {
-        const x = GRID_OFFSET_X + col * TILE_SIZE + 32;
-        const y = GRID_OFFSET_Y + row * TILE_SIZE + 32;
+        const x = this.gridOffsetX + col * this.tileSize + this.tileSize / 2;
+        const y = this.gridOffsetY + row * this.tileSize + this.tileSize / 2;
         const type = this.candyTypes[Math.floor(Math.random() * this.candyTypes.length)];
         
         let texture = `candy_${type}`;
@@ -85,8 +112,8 @@ export class GameScene extends Phaser.Scene {
         if (specialType === SPECIAL_TYPES.VERTICAL) texture = 'candy_vertical';
         if (specialType === SPECIAL_TYPES.COLOR_BOMB) texture = 'candy_colorbomb';
         
-        const candy = this.add.image(x, y, texture);
-        candy.setInteractive();
+        const candy = this.add.image(x, y, texture).setScale(this.scaleFactor);
+        candy.setInteractive({ useHandCursor: true });
         candy.setData('row', row);
         candy.setData('col', col);
         candy.setData('type', type);
@@ -101,7 +128,7 @@ export class GameScene extends Phaser.Scene {
         
         if (this.selectedTile === null) {
             this.selectedTile = candy;
-            this.tweens.add({ targets: candy, scaleX: 1.2, scaleY: 1.2, duration: 100, yoyo: true, repeat: 2 });
+            this.tweens.add({ targets: candy, scaleX: 1.2 * this.scaleFactor, scaleY: 1.2 * this.scaleFactor, duration: 100, yoyo: true, repeat: 2 });
         } else {
             const row = candy.getData('row');
             const col = candy.getData('col');
@@ -113,9 +140,9 @@ export class GameScene extends Phaser.Scene {
             if (isAdjacent) {
                 this.swapCandies(this.selectedTile, candy);
             } else {
-                this.selectedTile.setScale(1);
+                this.selectedTile.setScale(this.scaleFactor);
                 this.selectedTile = candy;
-                this.tweens.add({ targets: candy, scaleX: 1.2, scaleY: 1.2, duration: 100, yoyo: true, repeat: 2 });
+                this.tweens.add({ targets: candy, scaleX: 1.2 * this.scaleFactor, scaleY: 1.2 * this.scaleFactor, duration: 100, yoyo: true, repeat: 2 });
             }
         }
     }
@@ -127,10 +154,10 @@ export class GameScene extends Phaser.Scene {
         const row2 = candy2.getData('row');
         const col2 = candy2.getData('col');
         
-        const x1 = GRID_OFFSET_X + col1 * TILE_SIZE + 32;
-        const y1 = GRID_OFFSET_Y + row1 * TILE_SIZE + 32;
-        const x2 = GRID_OFFSET_X + col2 * TILE_SIZE + 32;
-        const y2 = GRID_OFFSET_Y + row2 * TILE_SIZE + 32;
+        const x1 = this.gridOffsetX + col1 * this.tileSize + this.tileSize / 2;
+        const y1 = this.gridOffsetY + row1 * this.tileSize + this.tileSize / 2;
+        const x2 = this.gridOffsetX + col2 * this.tileSize + this.tileSize / 2;
+        const y2 = this.gridOffsetY + row2 * this.tileSize + this.tileSize / 2;
 
         this.tweens.add({
             targets: [candy1, candy2],
@@ -250,7 +277,7 @@ export class GameScene extends Phaser.Scene {
                     this.grid[newRow][col] = candy;
                     this.grid[row][col] = null;
                     candy.setData('row', newRow);
-                    this.tweens.add({ targets: candy, y: GRID_OFFSET_Y + newRow * TILE_SIZE + 32, duration: 150 });
+                    this.tweens.add({ targets: candy, y: this.gridOffsetY + newRow * this.tileSize + this.tileSize / 2, duration: 150 });
                 }
             }
         }
@@ -268,11 +295,11 @@ export class GameScene extends Phaser.Scene {
             
             for (let row = 0; row < GRID_ROWS; row++) {
                 if (this.grid[row][col] === null) {
-                    const y = GRID_OFFSET_Y + row * TILE_SIZE + 32;
-                    const x = GRID_OFFSET_X + col * TILE_SIZE + 32;
+                    const y = this.gridOffsetY + row * this.tileSize + this.tileSize / 2;
+                    const x = this.gridOffsetX + col * this.tileSize + this.tileSize / 2;
                     const type = this.candyTypes[Math.floor(Math.random() * this.candyTypes.length)];
-                    const candy = this.add.image(x, y - emptyCount * 30, `candy_${type}`);
-                    candy.setInteractive();
+                    const candy = this.add.image(x, y - emptyCount * 30, `candy_${type}`).setScale(this.scaleFactor);
+                    candy.setInteractive({ useHandCursor: true });
                     candy.setData('row', row);
                     candy.setData('col', col);
                     candy.setData('type', type);
