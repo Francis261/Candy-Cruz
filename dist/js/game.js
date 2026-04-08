@@ -1,66 +1,4 @@
 var Game = (() => {
-  // src/utils/GameConfig.js
-  var GAME_WIDTH = 480;
-  var GAME_HEIGHT = 640;
-  var GRID_ROWS = 8;
-  var GRID_COLS = 8;
-  var TILE_SIZE = 64;
-  var GRID_OFFSET_X = (GAME_WIDTH - GRID_COLS * TILE_SIZE) / 2;
-  var GRID_OFFSET_Y = 100;
-  var CANDY_TYPES = ["red", "orange", "yellow", "green", "blue", "purple", "pink"];
-  var SPECIAL_TYPES = {
-    NONE: 0,
-    HORIZONTAL: 1,
-    VERTICAL: 2,
-    COLOR_BOMB: 3
-  };
-  var LEVELS = generateLevels();
-  function generateLevels() {
-    const levels = [];
-    for (let i = 1; i <= 50; i++) {
-      const baseScore = 1e3 + i * 500;
-      const baseMoves = Math.max(15, 30 - Math.floor(i / 10));
-      const candyTypes = Math.min(7, 5 + Math.floor(i / 15));
-      const hasSpecials = i >= 3;
-      levels.push({
-        id: i,
-        scoreTarget: baseScore + (i - 1) * 200,
-        moves: baseMoves,
-        candyTypes,
-        gridRows: 8,
-        gridCols: 8,
-        hasSpecials,
-        specialsChance: i >= 5 ? 0.1 + (i - 5) * 0.01 : 0
-      });
-    }
-    return levels;
-  }
-  var STORAGE_KEYS = {
-    HIGH_SCORE: "candycruz_highscore",
-    LEVEL_PROGRESS: "candycruz_level",
-    SOUND_ENABLED: "candycruz_sound"
-  };
-  function getGameConfig() {
-    return {
-      type: Phaser.AUTO,
-      width: GAME_WIDTH,
-      height: GAME_HEIGHT,
-      parent: "game-container",
-      backgroundColor: "#1a1a2e",
-      scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-        min: { width: 320, height: 480 },
-        max: { width: 768, height: 1024 }
-      },
-      scene: [BootScene, MainMenu, LevelSelect, GameScene, UIScene, PauseScene, GameOverScene, LevelCompleteScene],
-      physics: {
-        default: "arcade",
-        arcade: { debug: false }
-      }
-    };
-  }
-
   // src/utils/AssetGenerator.js
   var AssetGenerator = class {
     static generateCandyTextures(scene) {
@@ -225,7 +163,7 @@ var Game = (() => {
   };
 
   // src/scenes/BootScene.js
-  var BootScene2 = class extends Phaser.Scene {
+  var BootScene = class extends Phaser.Scene {
     constructor() {
       super({ key: "BootScene" });
     }
@@ -356,7 +294,7 @@ var Game = (() => {
   };
 
   // src/scenes/MainMenu.js
-  var MainMenu2 = class extends Phaser.Scene {
+  var MainMenu = class extends Phaser.Scene {
     constructor() {
       super({ key: "MainMenu" });
     }
@@ -534,7 +472,7 @@ var Game = (() => {
   };
 
   // src/scenes/LevelSelect.js
-  var LevelSelect2 = class extends Phaser.Scene {
+  var LevelSelect = class extends Phaser.Scene {
     constructor() {
       super({ key: "LevelSelect" });
     }
@@ -633,7 +571,7 @@ var Game = (() => {
   };
 
   // src/scenes/GameScene.js
-  var GameScene2 = class extends Phaser.Scene {
+  var GameScene = class extends Phaser.Scene {
     constructor() {
       super({ key: "GameScene" });
     }
@@ -1255,7 +1193,7 @@ var Game = (() => {
   };
 
   // src/scenes/UIScene.js
-  var UIScene2 = class extends Phaser.Scene {
+  var UIScene = class extends Phaser.Scene {
     constructor() {
       super({ key: "UIScene" });
     }
@@ -1348,7 +1286,7 @@ var Game = (() => {
   };
 
   // src/scenes/PauseScene.js
-  var PauseScene2 = class extends Phaser.Scene {
+  var PauseScene = class extends Phaser.Scene {
     constructor() {
       super({ key: "PauseScene" });
     }
@@ -1401,7 +1339,7 @@ var Game = (() => {
   };
 
   // src/scenes/GameOverScene.js
-  var GameOverScene2 = class extends Phaser.Scene {
+  var GameOverScene = class extends Phaser.Scene {
     constructor() {
       super({ key: "GameOverScene" });
     }
@@ -1469,7 +1407,7 @@ var Game = (() => {
   };
 
   // src/scenes/LevelCompleteScene.js
-  var LevelCompleteScene2 = class extends Phaser.Scene {
+  var LevelCompleteScene = class extends Phaser.Scene {
     constructor() {
       super({ key: "LevelCompleteScene" });
     }
@@ -1583,18 +1521,80 @@ var Game = (() => {
     }
   };
 
+  // src/utils/GameConfig.js
+  var GAME_WIDTH = 480;
+  var GAME_HEIGHT = 640;
+  var GRID_ROWS = 8;
+  var GRID_COLS = 8;
+  var TILE_SIZE = 64;
+  var GRID_OFFSET_X = (GAME_WIDTH - GRID_COLS * TILE_SIZE) / 2;
+  var GRID_OFFSET_Y = 100;
+  var CANDY_TYPES = ["red", "orange", "yellow", "green", "blue", "purple", "pink"];
+  var SPECIAL_TYPES = {
+    NONE: 0,
+    HORIZONTAL: 1,
+    VERTICAL: 2,
+    COLOR_BOMB: 3
+  };
+  var LEVELS = generateLevels();
+  function generateLevels() {
+    const levels = [];
+    for (let i = 1; i <= 50; i++) {
+      const baseScore = 1e3 + i * 500;
+      const baseMoves = Math.max(15, 30 - Math.floor(i / 10));
+      const candyTypes = Math.min(7, 5 + Math.floor(i / 15));
+      const hasSpecials = i >= 3;
+      levels.push({
+        id: i,
+        scoreTarget: baseScore + (i - 1) * 200,
+        moves: baseMoves,
+        candyTypes,
+        gridRows: 8,
+        gridCols: 8,
+        hasSpecials,
+        specialsChance: i >= 5 ? 0.1 + (i - 5) * 0.01 : 0
+      });
+    }
+    return levels;
+  }
+  var STORAGE_KEYS = {
+    HIGH_SCORE: "candycruz_highscore",
+    LEVEL_PROGRESS: "candycruz_level",
+    SOUND_ENABLED: "candycruz_sound"
+  };
+  function getGameConfig() {
+    return {
+      type: Phaser.AUTO,
+      width: GAME_WIDTH,
+      height: GAME_HEIGHT,
+      parent: "game-container",
+      backgroundColor: "#1a1a2e",
+      scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        min: { width: 320, height: 480 },
+        max: { width: 768, height: 1024 }
+      },
+      scene: [BootScene, MainMenu, LevelSelect, GameScene, UIScene, PauseScene, GameOverScene, LevelCompleteScene],
+      physics: {
+        default: "arcade",
+        arcade: { debug: false }
+      }
+    };
+  }
+
   // src/main.js
   window.addEventListener("load", () => {
     const config = getGameConfig();
     const game = new Phaser.Game(config);
-    game.scene.add("BootScene", BootScene2);
-    game.scene.add("MainMenu", MainMenu2);
-    game.scene.add("LevelSelect", LevelSelect2);
-    game.scene.add("GameScene", GameScene2);
-    game.scene.add("UIScene", UIScene2);
-    game.scene.add("PauseScene", PauseScene2);
-    game.scene.add("GameOverScene", GameOverScene2);
-    game.scene.add("LevelCompleteScene", LevelCompleteScene2);
+    game.scene.add("BootScene", config.scene[0]);
+    game.scene.add("MainMenu", config.scene[1]);
+    game.scene.add("LevelSelect", config.scene[2]);
+    game.scene.add("GameScene", config.scene[3]);
+    game.scene.add("UIScene", config.scene[4]);
+    game.scene.add("PauseScene", config.scene[5]);
+    game.scene.add("GameOverScene", config.scene[6]);
+    game.scene.add("LevelCompleteScene", config.scene[7]);
     console.log("Candy Cruz Match-3 Game Initialized");
   });
 })();

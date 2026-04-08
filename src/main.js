@@ -1,25 +1,17 @@
 import { getGameConfig } from './utils/GameConfig.js';
-import { BootScene } from './scenes/BootScene.js';
-import { MainMenu } from './scenes/MainMenu.js';
-import { LevelSelect } from './scenes/LevelSelect.js';
-import { GameScene } from './scenes/GameScene.js';
-import { UIScene } from './scenes/UIScene.js';
-import { PauseScene } from './scenes/PauseScene.js';
-import { GameOverScene } from './scenes/GameOverScene.js';
-import { LevelCompleteScene } from './scenes/LevelCompleteScene.js';
 
 window.addEventListener('load', () => {
     const config = getGameConfig();
     const game = new Phaser.Game(config);
     
-    game.scene.add('BootScene', BootScene);
-    game.scene.add('MainMenu', MainMenu);
-    game.scene.add('LevelSelect', LevelSelect);
-    game.scene.add('GameScene', GameScene);
-    game.scene.add('UIScene', UIScene);
-    game.scene.add('PauseScene', PauseScene);
-    game.scene.add('GameOverScene', GameOverScene);
-    game.scene.add('LevelCompleteScene', LevelCompleteScene);
+    game.scene.add('BootScene', config.scene[0]);
+    game.scene.add('MainMenu', config.scene[1]);
+    game.scene.add('LevelSelect', config.scene[2]);
+    game.scene.add('GameScene', config.scene[3]);
+    game.scene.add('UIScene', config.scene[4]);
+    game.scene.add('PauseScene', config.scene[5]);
+    game.scene.add('GameOverScene', config.scene[6]);
+    game.scene.add('LevelCompleteScene', config.scene[7]);
     
     console.log('Candy Cruz Match-3 Game Initialized');
 });

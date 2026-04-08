@@ -1,3 +1,12 @@
+import { BootScene } from '../scenes/BootScene.js';
+import { MainMenu } from '../scenes/MainMenu.js';
+import { LevelSelect } from '../scenes/LevelSelect.js';
+import { GameScene } from '../scenes/GameScene.js';
+import { UIScene } from '../scenes/UIScene.js';
+import { PauseScene } from '../scenes/PauseScene.js';
+import { GameOverScene } from '../scenes/GameOverScene.js';
+import { LevelCompleteScene } from '../scenes/LevelCompleteScene.js';
+
 export const GAME_WIDTH = 480;
 export const GAME_HEIGHT = 640;
 export const GRID_ROWS = 8;
