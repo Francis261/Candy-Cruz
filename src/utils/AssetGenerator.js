@@ -12,89 +12,60 @@ export class AssetGenerator {
 
         Object.entries(colors).forEach(([name, color]) => {
             const g = scene.make.graphics({ x: 0, y: 0, add: false });
-            
             g.fillStyle(Phaser.Display.Color.HexStringToColor(color.dark).color, 1);
             g.fillCircle(32, 34, 28);
-            
             g.fillStyle(Phaser.Display.Color.HexStringToColor(color.main).color, 1);
             g.fillCircle(32, 32, 28);
-            
             g.fillStyle(Phaser.Display.Color.HexStringToColor(color.light).color, 0.6);
             g.fillCircle(24, 24, 10);
-            
             g.generateTexture(`candy_${name}`, 64, 64);
             g.destroy();
         });
     }
 
     static generateSpecialCandyTextures(scene) {
-        this.generateHorizontalCandy(scene);
-        this.generateVerticalCandy(scene);
-        this.generateColorBombCandy(scene);
-    }
+        const h = scene.make.graphics({ x: 0, y: 0, add: false });
+        h.fillStyle(0x2c3e50, 1);
+        h.fillCircle(32, 34, 28);
+        h.fillStyle(0x3498db, 1);
+        h.fillCircle(32, 32, 28);
+        h.fillStyle(0xffffff, 1);
+        h.fillRect(8, 28, 48, 8);
+        h.fillStyle(0xf1c40f, 1);
+        h.fillRect(10, 30, 44, 4);
+        h.generateTexture('candy_horizontal', 64, 64);
+        h.destroy();
 
-    static generateHorizontalCandy(scene) {
-        const g = scene.make.graphics({ x: 0, y: 0, add: false });
-        
-        g.fillStyle(0x2c3e50, 1);
-        g.fillCircle(32, 34, 28);
-        g.fillStyle(0x3498db, 1);
-        g.fillCircle(32, 32, 28);
-        
-        g.fillStyle(0xffffff, 1);
-        g.fillRect(8, 28, 48, 8);
-        g.fillStyle(0xf1c40f, 1);
-        g.fillRect(10, 30, 44, 4);
-        
-        g.generateTexture('candy_horizontal', 64, 64);
-        g.destroy();
-    }
+        const v = scene.make.graphics({ x: 0, y: 0, add: false });
+        v.fillStyle(0x2c3e50, 1);
+        v.fillCircle(32, 34, 28);
+        v.fillStyle(0xe74c3c, 1);
+        v.fillCircle(32, 32, 28);
+        v.fillStyle(0xffffff, 1);
+        v.fillRect(28, 8, 8, 48);
+        v.fillStyle(0xf1c40f, 1);
+        v.fillRect(30, 10, 4, 44);
+        v.generateTexture('candy_vertical', 64, 64);
+        v.destroy();
 
-    static generateVerticalCandy(scene) {
-        const g = scene.make.graphics({ x: 0, y: 0, add: false });
-        
-        g.fillStyle(0x2c3e50, 1);
-        g.fillCircle(32, 34, 28);
-        g.fillStyle(0xe74c3c, 1);
-        g.fillCircle(32, 32, 28);
-        
-        g.fillStyle(0xffffff, 1);
-        g.fillRect(28, 8, 8, 48);
-        g.fillStyle(0xf1c40f, 1);
-        g.fillRect(30, 10, 4, 44);
-        
-        g.generateTexture('candy_vertical', 64, 64);
-        g.destroy();
-    }
-
-    static generateColorBombCandy(scene) {
-        const g = scene.make.graphics({ x: 0, y: 0, add: false });
-        
-        g.fillStyle(0x2c3e50, 1);
-        g.fillCircle(32, 34, 28);
-        g.fillStyle(0x1a1a2e, 1);
-        g.fillCircle(32, 32, 28);
-        
-        const colors = [0xe74c3c, 0xe67e22, 0xf1c40f, 0x2ecc71, 0x3498db, 0x9b59b6, 0xfd79a8];
-        colors.forEach((color, i) => {
-            const angle = (i / colors.length) * Math.PI * 2;
-            const x = 32 + Math.cos(angle) * 14;
-            const y = 32 + Math.sin(angle) * 14;
-            g.fillStyle(color, 1);
-            g.fillCircle(x, y, 5);
+        const cb = scene.make.graphics({ x: 0, y: 0, add: false });
+        cb.fillStyle(0x2c3e50, 1);
+        cb.fillCircle(32, 34, 28);
+        cb.fillStyle(0x1a1a2e, 1);
+        cb.fillCircle(32, 32, 28);
+        [0xe74c3c, 0xe67e22, 0xf1c40f, 0x2ecc71, 0x3498db, 0x9b59b6, 0xfd79a8].forEach((color, i) => {
+            const angle = (i / 7) * Math.PI * 2;
+            cb.fillStyle(color, 1);
+            cb.fillCircle(32 + Math.cos(angle) * 14, 32 + Math.sin(angle) * 14, 5);
         });
-        
-        g.fillStyle(0xffffff, 0.8);
-        g.fillCircle(26, 26, 4);
-        
-        g.generateTexture('candy_colorbomb', 64, 64);
-        g.destroy();
+        cb.fillStyle(0xffffff, 0.8);
+        cb.fillCircle(26, 26, 4);
+        cb.generateTexture('candy_colorbomb', 64, 64);
+        cb.destroy();
     }
 
     static generateParticleTextures(scene) {
-        const colors = ['#e74c3c', '#e67e22', '#f1c40f', '#2ecc71', '#3498db', '#9b59b6', '#fd79a8'];
-        
-        colors.forEach((color, i) => {
+        ['#e74c3c', '#e67e22', '#f1c40f', '#2ecc71', '#3498db', '#9b59b6', '#fd79a8'].forEach((color, i) => {
             const g = scene.make.graphics({ x: 0, y: 0, add: false });
             g.fillStyle(Phaser.Display.Color.HexStringToColor(color).color, 1);
             g.fillCircle(8, 8, 8);
@@ -104,98 +75,95 @@ export class AssetGenerator {
     }
 
     static generateUITextures(scene) {
-        const g = scene.make.graphics({ x: 0, y: 0, add: false });
-        
+        let g = scene.make.graphics({ x: 0, y: 0, add: false });
         g.fillStyle(0x2c3e50, 1);
-        g.fillRoundedRect(0, 0, 200, 60, 12);
+        g.fillRect(0, 0, 200, 60);
         g.fillStyle(0x34495e, 1);
-        g.fillRoundedRect(4, 4, 192, 52, 10);
+        g.fillRect(4, 4, 192, 52);
         g.generateTexture('button_large', 200, 60);
         g.destroy();
 
-        const btn = scene.make.graphics({ x: 0, y: 0, add: false });
-        btn.fillStyle(0x27ae60, 1);
-        btn.fillRoundedRect(0, 0, 120, 50, 10);
-        btn.fillStyle(0x2ecc71, 1);
-        btn.fillRoundedRect(2, 2, 116, 46, 8);
-        btn.generateTexture('btn_play', 120, 50);
-        btn.destroy();
+        g = scene.make.graphics({ x: 0, y: 0, add: false });
+        g.fillStyle(0x27ae60, 1);
+        g.fillRect(0, 0, 120, 50);
+        g.fillStyle(0x2ecc71, 1);
+        g.fillRect(2, 2, 116, 46);
+        g.generateTexture('btn_play', 120, 50);
+        g.destroy();
 
-        const btnSmall = scene.make.graphics({ x: 0, y: 0, add: false });
-        btnSmall.fillStyle(0x2980b9, 1);
-        btnSmall.fillRoundedRect(0, 0, 100, 40, 8);
-        btnSmall.fillStyle(0x3498db, 1);
-        btnSmall.fillRoundedRect(2, 2, 96, 36, 6);
-        btnSmall.generateTexture('btn_small', 100, 40);
-        btnSmall.destroy();
+        g = scene.make.graphics({ x: 0, y: 0, add: false });
+        g.fillStyle(0x2980b9, 1);
+        g.fillRect(0, 0, 100, 40);
+        g.fillStyle(0x3498db, 1);
+        g.fillRect(2, 2, 96, 36);
+        g.generateTexture('btn_small', 100, 40);
+        g.destroy();
 
-        const btnPause = scene.make.graphics({ x: 0, y: 0, add: false });
-        btnPause.fillStyle(0xf39c12, 1);
-        btnPause.fillCircle(25, 25, 22);
-        btnPause.fillStyle(0xf1c40f, 1);
-        btnPause.fillCircle(25, 25, 18);
-        btnPause.generateTexture('btn_pause', 50, 50);
-        btnPause.destroy();
+        g = scene.make.graphics({ x: 0, y: 0, add: false });
+        g.fillStyle(0xf39c12, 1);
+        g.fillCircle(25, 25, 22);
+        g.fillStyle(0xf1c40f, 1);
+        g.fillCircle(25, 25, 18);
+        g.generateTexture('btn_pause', 50, 50);
+        g.destroy();
 
-        const panel = scene.make.graphics({ x: 0, y: 0, add: false });
-        panel.fillStyle(0x1a1a2e, 0.95);
-        panel.fillRoundedRect(0, 0, 300, 400, 20);
-        panel.lineStyle(4, 0xf1c40f, 1);
-        panel.strokeRoundedRect(2, 2, 296, 396, 18);
-        panel.generateTexture('panel', 300, 400);
-        panel.destroy();
+        g = scene.make.graphics({ x: 0, y: 0, add: false });
+        g.fillStyle(0x1a1a2e, 0.95);
+        g.fillRect(0, 0, 300, 400);
+        g.lineStyle(4, 0xf1c40f, 1);
+        g.strokeRect(2, 2, 296, 396);
+        g.generateTexture('panel', 300, 400);
+        g.destroy();
 
-        const star = scene.make.graphics({ x: 0, y: 0, add: false });
-        star.fillStyle(0xf1c40f, 1);
-        star.fillPolygon(this.createStarPoints(32, 32, 5, 28, 14));
-        star.generateTexture('star', 64, 64);
-        star.destroy();
+        g = scene.make.graphics({ x: 0, y: 0, add: false });
+        g.fillStyle(0xf1c40f, 1);
+        this.drawStar(g, 32, 32, 5, 28, 14);
+        g.generateTexture('star', 64, 64);
+        g.destroy();
 
-        const starEmpty = scene.make.graphics({ x: 0, y: 0, add: false });
-        starEmpty.fillStyle(0x7f8c8d, 1);
-        starEmpty.fillPolygon(this.createStarPoints(32, 32, 5, 28, 14));
-        starEmpty.generateTexture('star_empty', 64, 64);
-        starEmpty.destroy();
+        g = scene.make.graphics({ x: 0, y: 0, add: false });
+        g.fillStyle(0x7f8c8d, 1);
+        this.drawStar(g, 32, 32, 5, 28, 14);
+        g.generateTexture('star_empty', 64, 64);
+        g.destroy();
 
-        const lock = scene.make.graphics({ x: 0, y: 0, add: false });
-        lock.fillStyle(0x7f8c8d, 1);
-        lock.fillRoundedRect(20, 28, 24, 20, 4);
-        lock.fillStyle(0x95a5a6, 1);
-        lock.fillCircle(32, 24, 12);
-        lock.generateTexture('lock', 64, 64);
-        lock.destroy();
+        g = scene.make.graphics({ x: 0, y: 0, add: false });
+        g.fillStyle(0x7f8c8d, 1);
+        g.fillRect(20, 28, 24, 20);
+        g.fillStyle(0x95a5a6, 1);
+        g.fillCircle(32, 24, 12);
+        g.generateTexture('lock', 64, 64);
+        g.destroy();
     }
 
-    static createStarPoints(centerX, centerY, points, outerRadius, innerRadius) {
-        const coords = [];
+    static drawStar(graphics, cx, cy, points, outerR, innerR) {
         for (let i = 0; i < points * 2; i++) {
-            const radius = i % 2 === 0 ? outerRadius : innerRadius;
+            const radius = i % 2 === 0 ? outerR : innerR;
             const angle = (i * Math.PI) / points - Math.PI / 2;
-            coords.push(centerX + Math.cos(angle) * radius);
-            coords.push(centerY + Math.sin(angle) * radius);
+            const x = cx + Math.cos(angle) * radius;
+            const y = cy + Math.sin(angle) * radius;
+            graphics.fillCircle(x, y, 3);
         }
-        return coords;
     }
 
     static generateBackgroundTextures(scene) {
-        const bg = scene.make.graphics({ x: 0, y: 0, add: false });
-        bg.fillStyle(0x1a1a2e, 1);
-        bg.fillRect(0, 0, 480, 640);
-        bg.fillStyle(0x16213e, 1);
-        bg.fillRect(0, 0, 480, 320);
-        
+        let g = scene.make.graphics({ x: 0, y: 0, add: false });
+        g.fillStyle(0x1a1a2e, 1);
+        g.fillRect(0, 0, 480, 640);
+        g.fillStyle(0x16213e, 1);
+        g.fillRect(0, 0, 480, 320);
         for (let i = 0; i < 50; i++) {
-            bg.fillStyle(0xffffff, Math.random() * 0.1 + 0.02);
-            bg.fillCircle(Math.random() * 480, Math.random() * 640, Math.random() * 2 + 1);
+            g.fillStyle(0xffffff, Math.random() * 0.1 + 0.02);
+            g.fillCircle(Math.random() * 480, Math.random() * 640, Math.random() * 2 + 1);
         }
-        bg.generateTexture('background', 480, 640);
-        bg.destroy();
+        g.generateTexture('background', 480, 640);
+        g.destroy();
 
-        const tileBg = scene.make.graphics({ x: 0, y: 0, add: false });
-        tileBg.fillStyle(0x2c3e50, 0.5);
-        tileBg.fillRoundedRect(0, 0, 64, 64, 8);
-        tileBg.generateTexture('tile_bg', 64, 64);
-        tileBg.destroy();
+        g = scene.make.graphics({ x: 0, y: 0, add: false });
+        g.fillStyle(0x2c3e50, 0.5);
+        g.fillRect(0, 0, 64, 64);
+        g.generateTexture('tile_bg', 64, 64);
+        g.destroy();
     }
 
     static generateAllTextures(scene) {
