@@ -108,12 +108,16 @@ var Game = (() => {
       g.destroy();
       g = scene.make.graphics({ x: 0, y: 0, add: false });
       g.fillStyle(15844367, 1);
-      this.drawStar(g, 32, 32, 5, 28, 14);
+      g.fillCircle(32, 24, 20);
+      g.fillStyle(16766720, 1);
+      g.fillCircle(32, 20, 8);
       g.generateTexture("star", 64, 64);
       g.destroy();
       g = scene.make.graphics({ x: 0, y: 0, add: false });
       g.fillStyle(8359053, 1);
-      this.drawStar(g, 32, 32, 5, 28, 14);
+      g.fillCircle(32, 24, 20);
+      g.fillStyle(9807270, 1);
+      g.fillCircle(32, 20, 8);
       g.generateTexture("star_empty", 64, 64);
       g.destroy();
       g = scene.make.graphics({ x: 0, y: 0, add: false });
@@ -123,15 +127,6 @@ var Game = (() => {
       g.fillCircle(32, 24, 12);
       g.generateTexture("lock", 64, 64);
       g.destroy();
-    }
-    static drawStar(graphics, cx, cy, points, outerR, innerR) {
-      for (let i = 0; i < points * 2; i++) {
-        const radius = i % 2 === 0 ? outerR : innerR;
-        const angle = i * Math.PI / points - Math.PI / 2;
-        const x = cx + Math.cos(angle) * radius;
-        const y = cy + Math.sin(angle) * radius;
-        graphics.fillCircle(x, y, 3);
-      }
     }
     static generateBackgroundTextures(scene) {
       let g = scene.make.graphics({ x: 0, y: 0, add: false });

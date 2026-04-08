@@ -117,13 +117,17 @@ export class AssetGenerator {
 
         g = scene.make.graphics({ x: 0, y: 0, add: false });
         g.fillStyle(0xf1c40f, 1);
-        this.drawStar(g, 32, 32, 5, 28, 14);
+        g.fillCircle(32, 24, 20);
+        g.fillStyle(0xffd700, 1);
+        g.fillCircle(32, 20, 8);
         g.generateTexture('star', 64, 64);
         g.destroy();
 
         g = scene.make.graphics({ x: 0, y: 0, add: false });
         g.fillStyle(0x7f8c8d, 1);
-        this.drawStar(g, 32, 32, 5, 28, 14);
+        g.fillCircle(32, 24, 20);
+        g.fillStyle(0x95a5a6, 1);
+        g.fillCircle(32, 20, 8);
         g.generateTexture('star_empty', 64, 64);
         g.destroy();
 
@@ -134,16 +138,6 @@ export class AssetGenerator {
         g.fillCircle(32, 24, 12);
         g.generateTexture('lock', 64, 64);
         g.destroy();
-    }
-
-    static drawStar(graphics, cx, cy, points, outerR, innerR) {
-        for (let i = 0; i < points * 2; i++) {
-            const radius = i % 2 === 0 ? outerR : innerR;
-            const angle = (i * Math.PI) / points - Math.PI / 2;
-            const x = cx + Math.cos(angle) * radius;
-            const y = cy + Math.sin(angle) * radius;
-            graphics.fillCircle(x, y, 3);
-        }
     }
 
     static generateBackgroundTextures(scene) {
