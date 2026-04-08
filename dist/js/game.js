@@ -638,6 +638,7 @@ var Game = (() => {
       this.audioManager = new AudioManager(this);
       this.candyTypes = CANDY_TYPES.slice(0, this.levelData.candyTypes);
       this.setupBackground();
+      this.scene.launch("UIScene");
       this.createGrid();
       this.startGame();
     }
