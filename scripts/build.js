@@ -8,20 +8,23 @@ if (!fs.existsSync(distDir)) {
     fs.mkdirSync(distDir, { recursive: true });
 }
 
-fs.readdirSync(path.join(__dirname, '..', 'assets'), { withFileTypes: true })
-    .forEach(entry => {
-        const srcPath = path.join(__dirname, '..', 'assets', entry.name);
-        const destPath = path.join(distDir, 'assets', entry.name);
-        if (entry.isDirectory()) {
-            fs.mkdirSync(destPath, { recursive: true });
-            fs.readdirSync(srcPath).forEach(file => {
-                fs.copyFileSync(path.join(srcPath, file), path.join(destPath, file));
-            });
-        } else {
-            fs.mkdirSync(path.dirname(destPath), { recursive: true });
-            fs.copyFileSync(srcPath, destPath);
-        }
-    });
+const assetsDir = path.join(__dirname, '..', 'assets');
+if (fs.existsSync(assetsDir)) {
+    fs.readdirSync(assetsDir, { withFileTypes: true })
+        .forEach(entry => {
+            const srcPath = path.join(assetsDir, entry.name);
+            const destPath = path.join(distDir, 'assets', entry.name);
+            if (entry.isDirectory()) {
+                fs.mkdirSync(destPath, { recursive: true });
+                fs.readdirSync(srcPath).forEach(file => {
+                    fs.copyFileSync(path.join(srcPath, file), path.join(destPath, file));
+                });
+            } else {
+                fs.mkdirSync(path.dirname(destPath), { recursive: true });
+                fs.copyFileSync(srcPath, destPath);
+            }
+        });
+}
 
 fs.copyFileSync(path.join(__dirname, '..', 'index.html'), path.join(distDir, 'index.html'));
 
