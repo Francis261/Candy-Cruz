@@ -121,12 +121,12 @@ var Game = (() => {
       panel.destroy();
       const star = scene.make.graphics({ x: 0, y: 0, add: false });
       star.fillStyle(15844367, 1);
-      star.fillStar(32, 32, 5, 28, 14);
+      star.fillPolygon(this.createStarPoints(32, 32, 5, 28, 14));
       star.generateTexture("star", 64, 64);
       star.destroy();
       const starEmpty = scene.make.graphics({ x: 0, y: 0, add: false });
       starEmpty.fillStyle(8359053, 1);
-      starEmpty.fillStar(32, 32, 5, 28, 14);
+      starEmpty.fillPolygon(this.createStarPoints(32, 32, 5, 28, 14));
       starEmpty.generateTexture("star_empty", 64, 64);
       starEmpty.destroy();
       const lock = scene.make.graphics({ x: 0, y: 0, add: false });
@@ -137,10 +137,22 @@ var Game = (() => {
       lock.generateTexture("lock", 64, 64);
       lock.destroy();
     }
+    static createStarPoints(centerX, centerY, points, outerRadius, innerRadius) {
+      const coords = [];
+      for (let i = 0; i < points * 2; i++) {
+        const radius = i % 2 === 0 ? outerRadius : innerRadius;
+        const angle = i * Math.PI / points - Math.PI / 2;
+        coords.push(centerX + Math.cos(angle) * radius);
+        coords.push(centerY + Math.sin(angle) * radius);
+      }
+      return coords;
+    }
     static generateBackgroundTextures(scene) {
       const bg = scene.make.graphics({ x: 0, y: 0, add: false });
-      bg.fillGradientStyle(1710638, 1710638, 1450302, 1450302, 1);
+      bg.fillStyle(1710638, 1);
       bg.fillRect(0, 0, 480, 640);
+      bg.fillStyle(1450302, 1);
+      bg.fillRect(0, 0, 480, 320);
       for (let i = 0; i < 50; i++) {
         bg.fillStyle(16777215, Math.random() * 0.1 + 0.02);
         bg.fillCircle(Math.random() * 480, Math.random() * 640, Math.random() * 2 + 1);
