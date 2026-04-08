@@ -4,14 +4,21 @@
   "description": "A full-featured 2D match-3 game like Candy Crush built with Phaser 3",
   "main": "src/main.js",
   "scripts": {
-    "start": "npx http-server -p 8080",
+    "start": "npx http-server -p 8080 -c-1",
     "dev": "npx http-server -p 8080 -c-1",
-    "test": "echo \"No tests specified\" && exit 0"
+    "build": "node scripts/build.js",
+    "clean": "rm -rf dist"
   },
-  "keywords": ["phaser", "game", "match3", "candy-crush"],
+  "keywords": [
+    "phaser",
+    "game",
+    "match3",
+    "candy-crush"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "esbuild": "^0.28.0",
     "http-server": "^14.1.1"
   },
   "dependencies": {
